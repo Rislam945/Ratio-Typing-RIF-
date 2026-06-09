@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIF Automation - Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+
+    <div class="max-w-3xl mx-auto bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-700">
+        <div class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
+            <h1 class="text-2xl font-bold text-emerald-400">⚙️ RIF Automation Setup Panel</h1>
+            <a href="index.html" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-slate-300">Exit Panel</a>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Notice Board -->
+            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                <label class="block text-sm font-semibold text-slate-300 mb-2">📢 Notice Board Text</label>
+                <textarea id="noticeInput" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none" placeholder="Enter dashboard notice..."></textarea>
+            </div>
+
+            <!-- Resource Links -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">🎥 YouTube Video URL</label>
+                    <input type="text" id="youtubeInput" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm focus:border-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">📁 Google Drive URL</label>
+                    <input type="text" id="driveInput" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm focus:border-emerald-500 outline-none">
+                </div>
+            </div>
+
+            <!-- Tool 1 Settings -->
+            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50 space-y-3">
+                <h3 class="text-sm font-bold text-emerald-400">📊 Prepress Tool 1 Customization</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Button/Title Name</label>
+                        <input type="text" id="tool1Title" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Description</label>
+                        <input type="text" id="tool1Desc" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool 2 Settings -->
+            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50 space-y-3">
+                <h3 class="text-sm font-bold text-sky-400">🖨️ Prepress Tool 2 Customization</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Button/Title Name</label>
+                        <input type="text" id="tool2Title" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Description</label>
+                        <input type="text" id="tool2Desc" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-sm outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <button onclick="saveSettings()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-bold text-white rounded-xl transition shadow-lg cursor-pointer">
+                💾 Save Configuration Live
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration from image_4fc2bf.png
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
+            authDomain: "rislam945-40b9c.firebaseapp.com",
+            databaseURL: "https://rislam945-40b9c-default-rtdb.firebaseio.com",
+            projectId: "rislam945-40b9c",
+            storageBucket: "rislam945-40b9c.appspot.com",
+            messagingSenderId: "35062453898",
+            appId: "1:35062453898:web:df84ea1e705e54dfd53f73"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Load existing settings from Firebase Realtime Database
+        database.ref('webSetup').once('value').then((snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('noticeInput').value = data.notice || "";
+                document.getElementById('youtubeInput').value = data.youtubeUrl || "";
+                document.getElementById('driveInput').value = data.driveUrl || "";
+                document.getElementById('tool1Title').value = data.tool1Title || "Ratio Typing & Data Input System";
+                document.getElementById('tool1Desc').value = data.tool1Desc || "Process layout matrices, balance sheets, and automatically optimize item distribution with precise gap-handling.";
+                document.getElementById('tool2Title').value = data.tool2Title || "Plate Ratio Plan & Calculator";
+                document.getElementById('tool2Desc').value = data.tool2Desc || "Calculate printing ratios, layout margins, and plate repeats for ganging runs.";
+            }
+        });
+
+        // Save modification data back to database
+        function saveSettings() {
+            const setupData = {
+                notice: document.getElementById('noticeInput').value,
+                youtubeUrl: document.getElementById('youtubeInput').value,
+                driveUrl: document.getElementById('driveInput').value,
+                tool1Title: document.getElementById('tool1Title').value,
+                tool1Desc: document.getElementById('tool1Desc').value,
+                tool2Title: document.getElementById('tool2Title').value,
+                tool2Desc: document.getElementById('tool2Desc').value
+            };
+
+            database.ref('webSetup').set(setupData).then(() => {
+                alert("Success: Configurations saved successfully! Refresh main page.");
+            }).catch(err => alert("Error saving configurations. Ensure database Rules are set to true."));
+        }
+    </script>
+</body>
+</html>
