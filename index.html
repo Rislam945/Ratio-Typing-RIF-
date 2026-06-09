@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RIF Automation Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-900">
 
-    <!-- Header / Admin Trigger -->
     <header class="p-4 flex justify-end">
         <button onclick="triggerAdmin()" class="text-xs text-slate-500 hover:text-slate-300 border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
             <span>⚙️</span> Admin Login
         </button>
     </header>
 
-    <!-- Main Dashboard Container -->
     <main class="max-w-3xl w-full mx-auto px-6 py-4 flex-grow flex flex-col justify-center">
-        
-        <!-- Branding Header -->
         <div class="text-center mb-10">
             <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Prepress Automation Hub</span>
             <h1 class="text-4xl font-extrabold text-slate-100 tracking-tight mt-3">Welcome to RIF Automation</h1>
@@ -30,17 +25,13 @@
             </p>
         </div>
 
-        <!-- System Cards Dynamic Container -->
         <div class="space-y-4">
             <h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase px-1">Active Prepress Tools</h2>
-            
-            <!-- JavaScript will feed live components here automatically -->
             <div id="dynamicToolsList" class="space-y-4">
                 <p class="text-xs text-slate-600 animate-pulse px-1">Establishing database pipeline connection...</p>
             </div>
         </div>
 
-        <!-- Media Blocks -->
         <div class="mt-8 pt-6 border-t border-slate-900">
             <h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase px-1 mb-4">Demos & Media Resources</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -62,7 +53,6 @@
         </div>
     </main>
 
-    <!-- Global Footer -->
     <footer class="p-6 border-t border-slate-900 text-center flex flex-col sm:flex-row justify-between items-center gap-3 max-w-3xl w-full mx-auto text-xs text-slate-600">
         <div class="flex items-center gap-2">
             <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
@@ -71,7 +61,6 @@
         <div>&copy; 2026 RIF Automation. All rights preserved.</div>
     </footer>
 
-    <!-- Core App Engine Script -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
@@ -86,7 +75,6 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Listen to dynamic firebase object node
         database.ref('webSetupDynamic').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -94,12 +82,10 @@
                 document.getElementById('ytLink').href = data.youtubeUrl || "#";
                 document.getElementById('driveLink').href = data.driveUrl || "#";
 
-                // Loop layout generation engine
                 const toolsListContainer = document.getElementById('dynamicToolsList');
-                toolsListContainer.innerHTML = ""; // Wipe loading or old components
+                toolsListContainer.innerHTML = "";
 
                 if (data.tools && Array.isArray(data.tools) && data.tools.length > 0) {
-                    // Color matrix rotation logic to make cards look pretty
                     const borders = ['hover:border-emerald-500/50', 'hover:border-sky-500/50', 'hover:border-amber-500/50', 'hover:border-purple-500/50'];
                     const badges = ['bg-emerald-500/10 text-emerald-400 border-emerald-500/20', 'bg-sky-500/10 text-sky-400 border-sky-500/20', 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'bg-purple-500/10 text-purple-400 border-purple-500/20'];
                     const icons = ['📊', '🖨️', '⚡', '⚙️'];
@@ -107,25 +93,27 @@
                     data.tools.forEach((tool, index) => {
                         if (tool) {
                             const colorIndex = index % borders.length;
-                            
+                            // Fallback to javascript void if link is empty
+                            const targetUrl = tool.url ? tool.url.trim() : '#';
+
                             const cardHtml = `
-                                <div class="group relative bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 ${borders[colorIndex]} transition-all duration-300 hover:shadow-lg">
+                                <a href="${targetUrl}" class="block group relative bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 ${borders[colorIndex]} transition-all duration-300 hover:shadow-lg cursor-pointer">
                                     <div class="flex items-start gap-4">
                                         <div class="p-3 rounded-xl border group-hover:scale-110 transition-transform duration-300 ${badges[colorIndex]}">
                                             ${icons[colorIndex] || '🛠️'}
                                         </div>
                                         <div>
-                                            <h3 class="font-bold text-slate-200 transition-colors">${tool.title}</h3>
+                                            <h3 class="font-bold text-slate-200 group-hover:text-slate-100 transition-colors">${tool.title}</h3>
                                             <p class="text-sm text-slate-400 mt-1 leading-relaxed">${tool.desc || ''}</p>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             `;
                             toolsListContainer.insertAdjacentHTML('beforeend', cardHtml);
                         }
                     });
                 } else {
-                    toolsListContainer.innerHTML = `<p class="text-xs text-slate-500 italic px-1">No automated components active at this time.</p>`;
+                    toolsListContainer.innerHTML = `<p class="text-xs text-slate-500 italic px-1">No automated components active.</p>`;
                 }
             }
         });
