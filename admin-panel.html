@@ -1,56 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RIF Automation - Dynamic Admin Panel</title>
+    <title>RIF অটোমেশন - কন্ট্রোল প্যানেল</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen p-6">
-
     <div class="max-w-3xl mx-auto bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-700">
-        <div class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
-            <h1 class="text-2xl font-bold text-emerald-400">⚙️ Dynamic Setup Panel</h1>
-            <a href="index.html" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-slate-300">Exit Panel</a>
-        </div>
-
+        <h1 class="text-2xl font-bold text-emerald-400 mb-6">⚙️ ডাইনামিক কন্ট্রোল প্যানেল</h1>
+        
         <div class="space-y-6">
-            <!-- Notice -->
-            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
-                <label class="block text-sm font-semibold text-slate-300 mb-2">📢 Notice Board Text</label>
-                <textarea id="noticeInput" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none" placeholder="Enter dashboard notice..."></textarea>
-            </div>
-
-            <!-- Links -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50 space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-300 mb-2">🎥 YouTube Video URL</label>
-                    <input type="text" id="youtubeInput" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm focus:border-emerald-500 outline-none">
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">📢 নোটিশ বোর্ড</label>
+                    <textarea id="noticeInput" rows="2" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm"></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-300 mb-2">📁 Google Drive URL</label>
-                    <input type="text" id="driveInput" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm focus:border-emerald-500 outline-none">
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">📞 যোগাযোগের তথ্য</label>
+                    <input type="text" id="contactInput" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm">
                 </div>
-            </div>
-
-            <!-- Tools Header -->
-            <div class="flex justify-between items-center pt-4 border-t border-slate-700/50">
-                <h2 class="text-lg font-bold text-slate-200">🛠️ Manage Prepress Tools</h2>
-                <button type="button" onclick="addNewToolRow()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1">
-                    ➕ Add New Tool Box
-                </button>
             </div>
 
             <div id="toolsContainer" class="space-y-4"></div>
-
-            <button onclick="saveAllSettings()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl transition shadow-lg cursor-pointer text-base">
-                💾 Save All Configurations Live
-            </button>
+            <button onclick="addNewToolRow()" class="px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-lg cursor-pointer">➕ নতুন টুল যোগ করুন</button>
+            <button onclick="saveAllSettings()" class="w-full py-4 bg-blue-600 font-bold text-white rounded-xl cursor-pointer">💾 সেটিংস সেভ করুন</button>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
@@ -61,90 +38,41 @@
             messagingSenderId: "35062453898",
             appId: "1:35062453898:web:df84ea1e705e54dfd53f73"
         };
-
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-
         let toolCount = 0;
 
         function addNewToolRow(title = "", desc = "", url = "") {
             toolCount++;
-            const container = document.getElementById('toolsContainer');
-            
-            const rowHtml = `
-                <div id="toolRow_${toolCount}" class="tool-row bg-slate-900/40 p-5 rounded-xl border border-slate-700/60 relative group space-y-3">
-                    <button onclick="removeToolRow(${toolCount})" class="absolute top-4 right-4 text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-2 py-1 rounded border border-red-500/20 opacity-60 group-hover:opacity-100 transition cursor-pointer">
-                        ❌ Remove
-                    </button>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Button / Title Name</label>
-                            <input type="text" value="${title}" class="tool-title w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Description Text</label>
-                            <input type="text" value="${desc}" class="tool-desc w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm outline-none focus:border-emerald-500">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-amber-400 mb-1">🔗 Target File Name or URL Link</label>
-                        <input type="text" value="${url}" class="tool-url w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm outline-none focus:border-amber-500 text-amber-200" placeholder="e.g., admin-panel.html or https://google.com">
-                    </div>
+            document.getElementById('toolsContainer').insertAdjacentHTML('beforeend', `
+                <div id="toolRow_${toolCount}" class="tool-row bg-slate-900/40 p-5 rounded-xl border border-slate-700/60 space-y-2">
+                    <input type="text" value="${title}" class="tool-title w-full bg-slate-800 p-2 text-sm" placeholder="বাটনের নাম">
+                    <input type="text" value="${desc}" class="tool-desc w-full bg-slate-800 p-2 text-sm" placeholder="সংক্ষিপ্ত বিবরণ">
+                    <input type="text" value="${url}" class="tool-url w-full bg-slate-800 p-2 text-sm" placeholder="ফাইলের নাম">
                 </div>
-            `;
-            container.insertAdjacentHTML('beforeend', rowHtml);
+            `);
         }
 
-        function removeToolRow(id) {
-            const row = document.getElementById(`toolRow_${id}`);
-            if(row) row.remove();
-        }
-
-        database.ref('webSetupDynamic').once('value').then((snapshot) => {
-            const data = snapshot.val();
-            if (data) {
+        database.ref('webSetupDynamic').once('value').then(snap => {
+            const data = snap.val();
+            if(data) {
                 document.getElementById('noticeInput').value = data.notice || "";
-                document.getElementById('youtubeInput').value = data.youtubeUrl || "";
-                document.getElementById('driveInput').value = data.driveUrl || "";
-                
-                if (data.tools && Array.isArray(data.tools)) {
-                    data.tools.forEach(t => {
-                        if(t) addNewToolRow(t.title, t.desc, t.url || "");
-                    });
-                }
-            } else {
-                addNewToolRow("Ratio Typing & Data Input System", "Process layout matrices...", "index.html");
+                document.getElementById('contactInput').value = data.contact || "";
+                data.tools?.forEach(t => addNewToolRow(t.title, t.desc, t.url));
             }
         });
 
         function saveAllSettings() {
-            const rows = document.querySelectorAll('.tool-row');
-            const toolsArray = [];
-
-            rows.forEach(row => {
-                const titleVal = row.querySelector('.tool-title').value;
-                const descVal = row.querySelector('.tool-desc').value;
-                const urlVal = row.querySelector('.tool-url').value;
-                
-                if (titleVal.trim() !== "") {
-                    toolsArray.push({
-                        title: titleVal,
-                        desc: descVal,
-                        url: urlVal
-                    });
-                }
-            });
-
-            const updatedData = {
+            const tools = Array.from(document.querySelectorAll('.tool-row')).map(row => ({
+                title: row.querySelector('.tool-title').value,
+                desc: row.querySelector('.tool-desc').value,
+                url: row.querySelector('.tool-url').value
+            }));
+            database.ref('webSetupDynamic').set({
                 notice: document.getElementById('noticeInput').value,
-                youtubeUrl: document.getElementById('youtubeInput').value,
-                driveUrl: document.getElementById('driveInput').value,
-                tools: toolsArray
-            };
-
-            database.ref('webSetupDynamic').set(updatedData).then(() => {
-                alert("Success: Unlimited configurations synced perfectly!");
-            }).catch(err => alert("Alert: Failed to sync database."));
+                contact: document.getElementById('contactInput').value,
+                tools: tools
+            }).then(() => alert("সেভ হয়েছে!"));
         }
     </script>
 </body>
