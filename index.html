@@ -3,79 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to RIF Automation</title>
+    <title>RIF Automation Terminal</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <style>body { background-color: #0f172a; }</style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 text-slate-200 relative">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-900">
 
-    <!-- Top Right Admin Login Button -->
-    <div class="absolute top-4 right-4">
-        <button onclick="openAdminPanel()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-400 hover:text-white rounded-lg border border-slate-700 transition-all cursor-pointer">
-            ⚙️ Admin Login
+    <!-- Header / Admin Trigger -->
+    <header class="p-4 flex justify-end">
+        <button onclick="triggerAdmin()" class="text-xs text-slate-500 hover:text-slate-300 border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+            <span>⚙️</span> Admin Login
         </button>
-    </div>
+    </header>
 
-    <div class="w-full max-w-2xl p-8 rounded-2xl bg-[#1e293b] shadow-2xl border border-slate-700/50">
-        <!-- Header -->
-        <div class="text-center mb-6">
-            <p class="text-xs font-bold tracking-widest text-emerald-400 uppercase mb-1">Prepress Automation Hub</p>
-            <h1 class="text-3xl font-extrabold text-white tracking-tight">Welcome to RIF Automation</h1>
+    <!-- Main Dashboard Container -->
+    <main class="max-w-3xl w-full mx-auto px-6 py-4 flex-grow flex flex-col justify-center">
+        
+        <!-- Branding Header -->
+        <div class="text-center mb-10">
+            <span class="text-xs font-bold tracking-widest text-emerald-400 uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Prepress Automation Hub</span>
+            <h1 class="text-4xl font-extrabold text-slate-100 tracking-tight mt-3">Welcome to RIF Automation</h1>
+            <p id="noticeText" class="text-sm text-slate-400 max-w-xl mx-auto mt-4 leading-relaxed">
+                Advanced automation solutions & expert support tools for high-volume garments accessories layout optimization.
+            </p>
         </div>
 
-        <!-- Dynamic Notice Board Block -->
-        <div id="noticeContainer" class="hidden mb-6 p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-xl text-center">
-            <p id="noticeDisplay" class="text-xs text-emerald-400 font-medium"></p>
-        </div>
-
-        <!-- Tools Grid Section -->
+        <!-- System Cards Dynamic Container -->
         <div class="space-y-4">
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Prepress Tools</h3>
+            <h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase px-1">Active Prepress Tools</h2>
             
-            <!-- Tool 1: Dynamic -->
-            <a href="ratio-typing.html" class="group relative flex items-start gap-4 p-5 rounded-xl bg-slate-900/40 border border-slate-700/40 hover:border-emerald-500/50 hover:bg-slate-900/60 transition shadow-md block">
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 rounded-l-xl"></div>
-                <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition-transform">📊</div>
-                <div>
-                    <h4 id="displayTool1Title" class="text-base font-bold text-slate-100 group-hover:text-emerald-400 transition-colors">Ratio Typing & Data Input System</h4>
-                    <p id="displayTool1Desc" class="text-xs text-slate-400 mt-1">Process layout matrices, balance sheets, and automatically optimize item distribution.</p>
-                </div>
-            </a>
-
-            <!-- Tool 2: Dynamic -->
-            <a href="plate-ratio.html" class="group relative flex items-start gap-4 p-5 rounded-xl bg-slate-900/40 border border-slate-700/40 hover:border-sky-500/50 hover:bg-slate-900/60 transition shadow-md block">
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-sky-500 rounded-l-xl"></div>
-                <div class="p-2.5 rounded-lg bg-sky-500/10 text-sky-400 group-hover:scale-110 transition-transform">🖨️</div>
-                <div>
-                    <h4 id="displayTool2Title" class="text-base font-bold text-slate-100 group-hover:text-sky-400 transition-colors">Plate Ratio Plan & Calculator</h4>
-                    <p id="displayTool2Desc" class="text-xs text-slate-400 mt-1">Calculate printing ratios, layout margins, and plate repeats for production runs.</p>
-                </div>
-            </a>
+            <!-- JavaScript will feed live components here automatically -->
+            <div id="dynamicToolsList" class="space-y-4">
+                <p class="text-xs text-slate-600 animate-pulse px-1">Establishing database pipeline connection...</p>
+            </div>
         </div>
 
-        <!-- Resources with Dynamic Anchors -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <a id="youtubeAnchor" href="#" target="_blank" class="p-5 rounded-xl bg-slate-900/20 border border-slate-700/30 hover:border-red-500/30 transition block opacity-50 pointer-events-none">
-                <div class="text-xl mb-2">🎥</div>
-                <h5 class="text-sm font-bold text-slate-200">Watch Video Demo</h5>
-                <p class="text-[11px] text-slate-400 mt-1">Click to view custom ExtendScript workflows on YouTube.</p>
-            </a>
-            <a id="driveAnchor" href="#" target="_blank" class="p-5 rounded-xl bg-slate-900/20 border border-slate-700/30 hover:border-blue-500/30 transition block opacity-50 pointer-events-none">
-                <div class="text-xl mb-2">📁</div>
-                <h5 class="text-sm font-bold text-slate-200">Access Project Files</h5>
-                <p class="text-[11px] text-slate-400 mt-1">Download prepress templates and balanced layout metrics.</p>
-            </a>
+        <!-- Media Blocks -->
+        <div class="mt-8 pt-6 border-t border-slate-900">
+            <h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase px-1 mb-4">Demos & Media Resources</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a id="ytLink" href="#" target="_blank" class="flex items-center gap-3 bg-slate-900/30 border border-slate-900 p-4 rounded-xl hover:bg-slate-900/60 hover:border-slate-800 transition">
+                    <span class="text-xl">🎬</span>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-300">Watch Video Demo</div>
+                        <div class="text-xs text-slate-500 mt-0.5">See the custom ExtendScript automation in action inside Adobe Illustrator.</div>
+                    </div>
+                </a>
+                <a id="driveLink" href="#" target="_blank" class="flex items-center gap-3 bg-slate-900/30 border border-slate-900 p-4 rounded-xl hover:bg-slate-900/60 hover:border-slate-800 transition">
+                    <span class="text-xl">📁</span>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-300">Access Project Files</div>
+                        <div class="text-xs text-slate-500 mt-0.5">Download prepress sample files, layouts, and test matrices.</div>
+                    </div>
+                </a>
+            </div>
         </div>
+    </main>
 
-        <!-- Footer -->
-        <div class="mt-8 pt-6 border-t border-slate-700/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p class="text-xs text-slate-500">© 2026 RIF Automation. All rights preserved.</p>
+    <!-- Global Footer -->
+    <footer class="p-6 border-t border-slate-900 text-center flex flex-col sm:flex-row justify-between items-center gap-3 max-w-3xl w-full mx-auto text-xs text-slate-600">
+        <div class="flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+            System Status: <span class="text-slate-400 font-medium">ONLINE</span>
         </div>
-    </div>
+        <div>&copy; 2026 RIF Automation. All rights preserved.</div>
+    </footer>
 
+    <!-- Core App Engine Script -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
@@ -90,52 +86,57 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Listen for Realtime Configurations updates
-        database.ref('webSetup').on('value', (snapshot) => {
+        // Listen to dynamic firebase object node
+        database.ref('webSetupDynamic').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Update Notice Box
-                if (data.notice && data.notice.trim() !== "") {
-                    document.getElementById('noticeDisplay').innerText = data.notice;
-                    document.getElementById('noticeContainer').classList.remove('hidden');
-                } else {
-                    document.getElementById('noticeContainer').classList.add('hidden');
-                }
-                
-                // Update Buttons Titles and Descriptions
-                if (data.tool1Title) document.getElementById('displayTool1Title').innerText = data.tool1Title;
-                if (data.tool1Desc) document.getElementById('displayTool1Desc').innerText = data.tool1Desc;
-                if (data.tool2Title) document.getElementById('displayTool2Title').innerText = data.tool2Title;
-                if (data.tool2Desc) document.getElementById('displayTool2Desc').innerText = data.tool2Desc;
+                if (data.notice) document.getElementById('noticeText').innerText = data.notice;
+                document.getElementById('ytLink').href = data.youtubeUrl || "#";
+                document.getElementById('driveLink').href = data.driveUrl || "#";
 
-                // Update YouTube Link
-                if (data.youtubeUrl && data.youtubeUrl.trim() !== "") {
-                    const yt = document.getElementById('youtubeAnchor');
-                    yt.href = data.youtubeUrl;
-                    yt.classList.remove('opacity-50', 'pointer-events-none');
-                }
-                // Update Google Drive Link
-                if (data.driveUrl && data.driveUrl.trim() !== "") {
-                    const dr = document.getElementById('driveAnchor');
-                    dr.href = data.driveUrl;
-                    dr.classList.remove('opacity-50', 'pointer-events-none');
+                // Loop layout generation engine
+                const toolsListContainer = document.getElementById('dynamicToolsList');
+                toolsListContainer.innerHTML = ""; // Wipe loading or old components
+
+                if (data.tools && Array.isArray(data.tools) && data.tools.length > 0) {
+                    // Color matrix rotation logic to make cards look pretty
+                    const borders = ['hover:border-emerald-500/50', 'hover:border-sky-500/50', 'hover:border-amber-500/50', 'hover:border-purple-500/50'];
+                    const badges = ['bg-emerald-500/10 text-emerald-400 border-emerald-500/20', 'bg-sky-500/10 text-sky-400 border-sky-500/20', 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'bg-purple-500/10 text-purple-400 border-purple-500/20'];
+                    const icons = ['📊', '🖨️', '⚡', '⚙️'];
+
+                    data.tools.forEach((tool, index) => {
+                        if (tool) {
+                            const colorIndex = index % borders.length;
+                            
+                            const cardHtml = `
+                                <div class="group relative bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 ${borders[colorIndex]} transition-all duration-300 hover:shadow-lg">
+                                    <div class="flex items-start gap-4">
+                                        <div class="p-3 rounded-xl border group-hover:scale-110 transition-transform duration-300 ${badges[colorIndex]}">
+                                            ${icons[colorIndex] || '🛠️'}
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-slate-200 transition-colors">${tool.title}</h3>
+                                            <p class="text-sm text-slate-400 mt-1 leading-relaxed">${tool.desc || ''}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            toolsListContainer.insertAdjacentHTML('beforeend', cardHtml);
+                        }
+                    });
+                } else {
+                    toolsListContainer.innerHTML = `<p class="text-xs text-slate-500 italic px-1">No automated components active at this time.</p>`;
                 }
             }
         });
 
-        function openAdminPanel() {
-            const adminPassword = prompt("Alert: Enter Admin Master Password to configure setup:");
-            if (adminPassword === null) return;
-
-            database.ref('systemSettings/password').once('value').then((snapshot) => {
-                let correctPassword = snapshot.val() || "0000@0000";
-                if (adminPassword.trim() === correctPassword) {
-                    alert("Success: Login Successful! Loading Admin Panel Workspace...");
-                    window.location.href = "admin-panel.html"; 
-                } else {
-                    alert("Alert: Invalid Admin Password! Access Denied.");
-                }
-            });
+        function triggerAdmin() {
+            const pass = prompt("Remove flag: Enter Admin Master Password to configure setup:");
+            if (pass === "0000@0000") {
+                window.location.href = "admin-panel.html";
+            } else if (pass !== null) {
+                alert("Alert: Incorrect authentication signature.");
+            }
         }
     </script>
 </body>
