@@ -3,164 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Control Panel - RIF Automation</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <title>RIF Automation - Premium Hub</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { background-color: #0f172a; }
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --accent-green: #10b981;
+            --accent-blue: #3b82f6; --accent-red: #ef4444; --accent-amber: #f59e0b;
+            --text-main: #f8fafc; --text-muted: #94a3b8; --border-color: #334155;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 40px 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        .hub-container { max-width: 800px; width: 90%; background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 1px solid var(--border-color); text-align: center; }
+        h1 { font-size: 2.2rem; margin-bottom: 5px; background: linear-gradient(to right, #ffffff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tagline { color: var(--accent-green); font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; }
+        .subtitle { color: var(--text-muted); margin-bottom: 35px; font-size: 1.05rem; line-height: 1.5; }
+        .section-title { text-align: left; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 25px 0 12px 0; padding-bottom: 6px; border-bottom: 1px solid var(--border-color); }
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .grid-layout { grid-template-columns: 1fr; } }
+        .portal-card { background: #111827; border: 1px solid var(--border-color); padding: 22px; border-radius: 12px; text-align: left; text-decoration: none; color: var(--text-main); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
+        .portal-card:hover { transform: translateY(-4px); }
+        .btn-ratio { border-left: 3px solid var(--accent-green); }
+        .btn-plate { border-left: 3px solid var(--accent-blue); }
+        .btn-youtube { border-left: 3px solid var(--accent-red); }
+        .btn-drive { border-left: 3px solid var(--accent-amber); }
+        .card-icon { font-size: 1.8rem; margin-bottom: 12px; }
+        .card-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 6px; }
+        .card-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+        .full-width { grid-column: span 2; }
+        @media (max-width: 600px) { .full-width { grid-column: span 1; } }
+        
+        /* Admin Panel Styles */
+        .admin-bar { display: none; background: #020617; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px dashed var(--accent-green); text-align: left; }
+        .admin-bar h3 { margin-top: 0; color: var(--accent-green); display: flex; justify-content: space-between; }
+        .user-manager-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-bottom: 15px; }
+        .admin-bar input { background: #1e293b; border: 1px solid var(--border-color); color: white; padding: 8px 12px; border-radius: 6px; font-size: 13px; }
+        .btn-action { background: var(--accent-green); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .user-list { background: #111827; border: 1px solid var(--border-color); border-radius: 6px; max-height: 150px; overflow-y: auto; padding: 10px; margin-top: 10px; }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
+        .user-item:last-child { border: none; }
+        .btn-del-user { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 12px; }
+        
+        .footer-section { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+        .badge { background: #022c22; color: var(--accent-green); padding: 4px 8px; border-radius: 6px; font-weight: bold; border: 1px solid #065f46; cursor: pointer; user-select: none; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 text-slate-200">
+<body>
 
-    <div id="loginGateway" class="w-full max-w-md p-8 rounded-2xl bg-[#1e293b] shadow-2xl border border-slate-700/50">
-        <div class="text-center mb-6">
-            <p class="text-xs font-bold tracking-widest text-sky-400 uppercase mb-1">RIF Automation</p>
-            <h2 class="text-xl font-extrabold text-white">Admin Authentication</h2>
-            <p class="text-xs text-slate-400 mt-1">Please enter the master password to access control panel.</p>
-        </div>
-        <div class="space-y-4">
+<div class="hub-container">
+    <!-- Admin Manager Panel -->
+    <div id="adminBar" class="admin-bar">
+        <h3>🛠️ RIF Super Admin Manager <button style="background:none; border:none; color:var(--accent-red); cursor:pointer; font-size:14px;" onclick="logoutAdmin()">Logout</button></h3>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
             <div>
-                <input type="password" id="gatewayPassword" 
-                       class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all text-sm text-center tracking-widest" 
-                       placeholder="••••••••">
+                <label style="font-size:12px; color:var(--text-muted);">YouTube Link:</label><br>
+                <input type="text" id="ytLinkInput" style="width:100%; box-sizing:border-box;">
             </div>
-            <button onclick="checkAdminAccess()" 
-                    class="w-full py-3 px-4 bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-slate-950 font-bold rounded-xl transition-all shadow-lg shadow-sky-500/10 cursor-pointer text-sm text-center font-bold">
-                Access Admin Panel
-            </button>
+            <div>
+                <label style="font-size:12px; color:var(--text-muted);">Google Drive Link:</label><br>
+                <input type="text" id="driveLinkInput" style="width:100%; box-sizing:border-box;">
+            </div>
         </div>
-        <div class="mt-6 pt-4 border-t border-slate-700/30 text-center">
-            <p class="text-[10px] text-slate-500">© 2026 RIF Automation. All rights preserved.</p>
+        <button class="btn-action" style="background:var(--accent-blue); margin-bottom:20px;" onclick="saveLinks()">Update Links</button>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top:15px;">
+            <label style="font-size:14px; font-weight:bold; color:var(--text-main);">Manage System Users</label>
+            <div class="user-manager-grid" style="margin-top:8px;">
+                <input type="text" id="newUsername" placeholder="Enter User ID">
+                <input type="password" id="newUserPassword" placeholder="Enter Password">
+                <button class="btn-action" onclick="addOrUpdateUser()">Add/Update User</button>
+            </div>
+            <div class="user-list" id="userListContainer">Loading active user list...</div>
         </div>
     </div>
 
-    <div id="adminPanel" class="w-full max-w-lg p-8 rounded-2xl bg-[#1e293b] shadow-2xl border border-slate-700/50 hidden">
-        <div class="text-center mb-8">
-            <p class="text-xs font-bold tracking-widest text-emerald-400 uppercase mb-1">Prepress Automation Hub</p>
-            <h1 class="text-2xl font-extrabold text-white tracking-tight">RIF Automation Control</h1>
-            <p class="text-sm text-slate-400 mt-2">Manage system access, security settings, and global credentials.</p>
-        </div>
+    <div class="tagline">Prepress Automation Hub</div>
+    <h1>Welcome to RIF Automation</h1>
+    <p class="subtitle">Advanced automation solutions & expert support tools for high-volume garments accessories layout optimization.</p>
 
-        <hr class="border-slate-700/50 my-6">
-
-        <div class="space-y-6">
+    <!-- ক্যালকুলেশন টুলস বাটন গ্রিড -->
+    <div class="section-title">Prepress Tools</div>
+    <div class="grid-layout">
+        <!-- বাটন ১: রেশিও টাইপিং -->
+        <a href="#" onclick="verifyAccess('ratio-typing.html')" class="portal-card btn-ratio full-width">
             <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Current System Status</label>
-                <div class="flex items-center gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/30">
-                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-sm font-medium text-emerald-400">System Online & Operational</span>
-                </div>
+                <div class="card-icon">📊</div>
+                <div class="card-title">Ratio Typing & Data Input System</div>
+                <div class="card-desc">Process layout matrices, balance sheets, and automatically optimize item distribution with precise gap-handling.</div>
             </div>
-
+        </a>
+        
+        <!-- বাটন ২: প্লেট রেশিও ক্যালকুলেটর -->
+        <a href="#" onclick="verifyAccess('plate-ratio.html')" class="portal-card btn-plate full-width">
             <div>
-                <label for="newPassword" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Update System Password</label>
-                <input type="password" id="newPassword" 
-                       class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all text-sm" 
-                       placeholder="Enter new master password">
+                <div class="card-icon">🖨️</div>
+                <div class="card-title">Plate Ratio Plan & Calculator</div>
+                <div class="card-desc">Calculate printing ratios, layout margins, and plate repeats for gang run production.</div>
             </div>
-
-            <div class="pt-2 space-y-3">
-                <button onclick="updatePassword()" 
-                        class="w-full py-3 px-4 bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-slate-950 font-bold rounded-xl transition-all shadow-lg shadow-sky-500/10 cursor-pointer text-sm text-center">
-                    Update Master Password
-                </button>
-                <button onclick="triggerEmergencyLock()" 
-                        class="w-full py-3 px-4 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-semibold rounded-xl transition-all cursor-pointer text-sm text-center">
-                    Emergency System Lockdown
-                </button>
-            </div>
-        </div>
-
-        <div class="mt-8 pt-6 border-t border-slate-700/30 text-center">
-            <p class="text-xs text-slate-500">© 2026 RIF Automation. All rights preserved.</p>
-        </div>
+        </a>
     </div>
 
-    <script>
-        // ⚠️ আপনার Firebase থেকে এই আসল মানগুলো এখানে অবশ্যই বসাবেন
-        const firebaseConfig = {
-            apiKey: "YOUR_REAL_API_KEY",
-            authDomain: "YOUR_REAL_AUTH_DOMAIN",
-            databaseURL: "YOUR_REAL_DATABASE_URL",
-            projectId: "YOUR_REAL_PROJECT_ID",
-            storageBucket: "YOUR_REAL_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_REAL_MESSAGING_SENDER_ID",
-            appId: "YOUR_REAL_APP_ID"
-        };
+    <div class="section-title">Demos & Media Resources</div>
+    <div class="grid-layout">
+        <a id="ytLinkBtn" href="#" target="_blank" class="portal-card btn-youtube">
+            <div>
+                <div class="card-icon">🎥</div>
+                <div class="card-title">Watch Video Demo</div>
+                <div class="card-desc">See the custom ExtendScript automation in action inside Adobe Illustrator.</div>
+            </div>
+        </a>
+        <a id="driveLinkBtn" href="#" target="_blank" class="portal-card btn-drive">
+            <div>
+                <div class="card-icon">📁</div>
+                <div class="card-title">Access Project Files</div>
+                <div class="card-desc">Download prepress sample files, layouts, and test matrices.</div>
+            </div>
+        </a>
+    </div>
 
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+    <div class="footer-section">
+        <div>System Status: <span class="badge" ondblclick="loginAdmin()">ONLINE</span></div>
+        <div>© 2026 RIF Automation. All rights preserved.</div>
+    </div>
+</div>
+
+<script>
+    // 🛠️ আপনার নিজস্ব Firebase Configuration তথ্য নিচে বসাবেন
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        databaseURL: "YOUR_DATABASE_URL",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // সুপার অ্যাডমিন পাসওয়ার্ডের SHA-256 হ্যাশ (ডিফল্ট পাসওয়ার্ড: 'rifadmin2026')
+    const SUPER_ADMIN_HASH = "80f8664188b0cbbf3f8e536bf38b555776d525fa4900a6e0c7a8bf6028a07c39";
+
+    async function hashPassword(string) {
+        const utf8 = new TextEncoder().encode(string);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    window.onload = function() {
+        db.ref('settings').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            const yt = data.ytLink || "https://youtube.com";
+            const drive = data.driveLink || "https://drive.google.com";
+            
+            document.getElementById('ytLinkBtn').href = yt;
+            document.getElementById('driveLinkBtn').href = drive;
+            document.getElementById('ytLinkInput').value = yt;
+            document.getElementById('driveLinkInput').value = drive;
+        });
+
+        if(sessionStorage.getItem('rif_super_admin') === 'true') { showAdminPanel(); }
+    }
+
+    async function loginAdmin() {
+        const pass = prompt("Enter Super Admin Password:");
+        if (!pass) return;
+        const hashed = await hashPassword(pass);
+        if (hashed === SUPER_ADMIN_HASH) {
+            sessionStorage.setItem('rif_super_admin', 'true');
+            showAdminPanel();
+            alert("Success: Admin panel activated!");
+        } else {
+            alert("Alert: Invalid admin credentials!");
         }
-        const database = firebase.database();
+    }
 
-        // লগইন ফাংশন (সরাসরি ফায়ারবেস থেকে পাসওয়ার্ড চেক করবে)
-        function checkAdminAccess() {
-            const enteredPassword = document.getElementById('gatewayPassword').value.trim();
+    function showAdminPanel() {
+        document.getElementById('adminBar').style.display = 'block';
+        loadUserList();
+    }
 
-            if (enteredPassword === "") {
-                alert("Alert: Please enter a password!");
-                return;
+    function logoutAdmin() {
+        sessionStorage.removeItem('rif_super_admin');
+        document.getElementById('adminBar').style.display = 'none';
+        alert("Alert: Logged out from admin mode.");
+    }
+
+    function saveLinks() {
+        const yt = document.getElementById('ytLinkInput').value.trim();
+        const drive = document.getElementById('driveLinkInput').value.trim();
+        db.ref('settings').update({ ytLink: yt, driveLink: drive })
+          .then(() => alert("Success: Media links updated!"));
+    }
+
+    async function addOrUpdateUser() {
+        const uName = document.getElementById('newUsername').value.trim().toLowerCase();
+        const uPass = document.getElementById('newUserPassword').value.trim();
+        if(!uName || !uPass) { alert("Alert: Fields cannot be empty!"); return; }
+        
+        const hashedPass = await hashPassword(uPass);
+        db.ref('users/' + uName).set({ password: hashedPass })
+          .then(() => {
+              alert("Success: User registered!");
+              document.getElementById('newUsername').value = '';
+              document.getElementById('newUserPassword').value = '';
+          });
+    }
+
+    function loadUserList() {
+        db.ref('users').on('value', (snapshot) => {
+            const users = snapshot.val() || {};
+            let html = '';
+            for(let user in users) {
+                html += `<div class="user-item"><span>👤 <b>${user}</b></span><button class="btn-del-user" onclick="deleteUser('${user}')">❌ Remove</button></div>`;
             }
+            document.getElementById('userListContainer').innerHTML = html || 'No sub-users.';
+        });
+    }
 
-            // ফায়ারবেস থেকে লাইভ পাসওয়ার্ড ডাটা চেক করা হচ্ছে
-            database.ref('systemSettings/password').once('value')
-                .then((snapshot) => {
-                    let correctPassword = snapshot.val();
-                    
-                    // যদি ডাটাবেজে আগে থেকে কোনো পাসওয়ার্ড না থাকে, তবে ডিফল্টটি সেট হবে
-                    if (!correctPassword) {
-                        correctPassword = "0000@0000";
-                        database.ref('systemSettings/password').set(correctPassword);
-                        database.ref('systemSettings/status').set("ONLINE");
-                    }
+    function deleteUser(username) {
+        if(confirm(`Remove user: ${username}?`)) {
+            db.ref('users/' + username).remove().then(() => alert("Success: Access revoked!"));
+        }
+    }
 
-                    if (enteredPassword === correctPassword) {
-                        document.getElementById('loginGateway').classList.add('hidden');
-                        document.getElementById('adminPanel').classList.remove('hidden');
-                        alert("Success: Access Granted.");
-                    } else {
-                        alert("Alert: Invalid master password!");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Firebase Read Error:", error);
-                    alert("Alert: Database connection failed! Check your Firebase Configuration or Rules.");
-                });
+    async function verifyAccess(targetPage) {
+        if(sessionStorage.getItem('rif_user_authenticated') === 'true' || sessionStorage.getItem('rif_super_admin') === 'true') {
+            window.location.href = targetPage;
+            return;
         }
 
-        // পাসওয়ার্ড পরিবর্তনের ফাংশন
-        function updatePassword() {
-            const newPasswordInput = document.getElementById('newPassword').value.trim();
+        const uId = prompt("Enter User ID:"); if(!uId) return;
+        const uPass = prompt("Enter Password:"); if(!uPass) return;
 
-            if (newPasswordInput === "") {
-                alert("Alert: Please enter a valid password first!");
-                return;
+        const cleanId = uId.trim().toLowerCase();
+        const hashedInputPass = await hashPassword(uPass.trim());
+
+        db.ref('users/' + cleanId).once('value', (snapshot) => {
+            const userData = snapshot.val();
+            if(userData && userData.password === hashedInputPass) {
+                sessionStorage.setItem('rif_user_authenticated', 'true');
+                alert("Success: Access granted!");
+                window.location.href = targetPage;
+            } else {
+                alert("Alert: Unauthorized credentials.");
             }
-
-            database.ref('systemSettings/password').set(newPasswordInput)
-                .then(() => {
-                    alert("Success: Master password updated successfully!");
-                    document.getElementById('newPassword').value = "";
-                })
-                .catch((error) => {
-                    alert("Alert: Failed to update password.");
-                });
-        }
-
-        // ইমার্জেন্সি লকডাউন ফাংশন
-        function triggerEmergencyLock() {
-            if (confirm("Are you sure you want to lock the system?")) {
-                database.ref('systemSettings/status').set("LOCKED")
-                    .then(() => {
-                        alert("Success: Emergency system lockdown activated.");
-                    })
-                    .catch((error) => {
-                        alert("Alert: Lockdown failed.");
-                    });
-            }
-        }
-    </script>
+        });
+    }
+</script>
 </body>
 </html>
