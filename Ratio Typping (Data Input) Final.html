@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RIF Automation - Serial Only</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #1e293b; border-bottom: 3px solid #28a745; padding-bottom: 10px; margin-top: 0; }
+        
+        .preset-section { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: center; }
+        .preset-section input, .preset-section select { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; }
+        
+        .input-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #475569; font-size: 14px; }
+        textarea { width: 100%; height: 300px; border: 2px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 14px; box-sizing: border-box; outline: none; white-space: pre; overflow-wrap: normal; font-family: monospace; }
+        textarea:focus { border-color: #28a745; }
+        
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { padding: 10px 15px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-save { background-color: #0d6efd; color: white; }
+        .btn-load { background-color: #198754; color: white; }
+        .btn-delete { background-color: #dc3545; color: white; }
+        .btn-preview { background-color: #6c757d; color: white; flex: 1; }
+        .btn-download { background-color: #28a745; color: white; flex: 1; }
+        .btn-clean { background-color: #ff9800; color: white; flex: 1; }
+        
+        button:hover { opacity: 0.85; }
+
+        .summary-section { margin-top: 20px; display: none; }
+        .table-wrapper { overflow-x: auto; max-height: 600px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
+        th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+        th { background-color: #f8fafc; position: sticky; top: 0; z-index: 10; }
+        .total-row { background-color: #e8f5e9 !important; font-weight: bold; color: #2e7d32; }
+        .empty-row { background-color: #fcfcfc; height: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>RIF Automation - Multi-Preset Data</h2>
+
+    <div class="preset-section">
+        <input type="text" id="presetName" placeholder="Preset Name">
+        <button class="btn-save" onclick="savePreset()">Save Preset</button>
+        <select id="presetList"><option value="">Saved Presets List...</option></select>
+        <button class="btn-load" onclick="loadPreset()">Load</button>
+        <button class="btn-delete" onclick="deletePreset()">Delete</button>
+    </div>
+
+    <div class="input-grid">
+        <div>
+            <label>Imp. Data (Name.Sheet):</label>
+            <textarea id="impInput" placeholder="1.50&#10;2.60&#10;&#10;1.10" oninput="showSummary()"></textarea>
+        </div>
+        <div>
+            <label>Set Data (Set.Value):</label>
+            <textarea id="dataInput" placeholder="1.2&#10;2.5&#10;&#10;1.8" oninput="showSummary()"></textarea>
+        </div>
+    </div>
+    
+    <div class="btn-group">
+        <button class="btn-preview" onclick="showSummary()">Refresh Summary</button>
+        <button class="btn-download" onclick="downloadCSV(false)">Excel (With Total & Gaps)</button>
+        <button class="btn-clean" onclick="downloadCSV(true)">Download Clean</button>
+    </div>
+
+    <div id="summarySection" class="summary-section">
+        <div class="table-wrapper">
+            <table id="previewTable">
+                <thead><tr id="tableHeader"></tr></thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot id="tableFooter"></tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const inputArea = document.getElementById('dataInput');
+    const impArea = document.getElementById('impInput');
+    const presetList = document.getElementById('presetList');
+    const presetNameInput = document.getElementById('presetName');
+
+    window.onload = updatePresetDropdown;
+
+    function savePreset() {
+        const name = presetNameInput.value.trim();
+        if (!name) {
+            window.alert("Alert: Please enter a preset name!");
+            return;
+        }
+        let presets = JSON.parse(localStorage.getItem('rif_presets_serial_fixed') || '{}');
+        presets[name] = { imp: impArea.value, sets: inputArea.value };
+        localStorage.setItem('rif_presets_serial_fixed', JSON.stringify(presets));
+        updatePresetDropdown();
+        presetList.value = name;
+        window.alert("Success: Preset saved successfully!");
+    }
+
+    function loadPreset() {
+        const selected = presetList.value;
+        if (!selected) return;
+        let presets = JSON.parse(localStorage.getItem('rif_presets_serial_fixed') || '{}');
+        impArea.value = presets[selected].imp || "";
+        inputArea.value = presets[selected].sets || "";
+        presetNameInput.value = selected;
+        showSummary();
+    }
+
+    function deletePreset() {
+        const selected = presetList.value;
+        if (!selected || !confirm("Are you sure you want to delete this preset?")) return;
+        let presets = JSON.parse(localStorage.getItem('rif_presets_serial_fixed') || '{}');
+        delete presets[selected];
+        localStorage.setItem('rif_presets_serial_fixed', JSON.stringify(presets));
+        presetNameInput.value = "";
+        updatePresetDropdown();
+        showSummary();
+    }
+
+    function updatePresetDropdown() {
+        let presets = JSON.parse(localStorage.getItem('rif_presets_serial_fixed') || '{}');
+        presetList.innerHTML = '<option value="">Saved Presets List...</option>';
+        for (let name in presets) {
+            let opt = document.createElement('option');
+            opt.value = name; opt.innerText = name;
+            presetList.appendChild(opt);
+        }
+    }
+
+    function parseData() {
+        const setData = inputArea.value.split('\n');
+        const impData = impArea.value.split('\n');
+        if (inputArea.value === "" && impArea.value === "") return null;
+
+        let allRows = [];
+        let setsColumns = new Set();
+        let columnTotals = {};
+        let currentSerial = 1; 
+        const maxLines = Math.max(setData.length, impData.length);
+
+        for (let i = 0; i < maxLines; i++) {
+            const impLine = impData[i] ? impData[i].trim() : "";
+            const setLine = setData[i] ? setData[i].trim() : "";
+            
+            let row = { ai_filename: "", imp_name: "", imp_sheet: "", sets: {}, is_gap: true };
+
+            if (impLine === "" && setLine === "") {
+                currentSerial = 1; 
+                row.is_gap = true;
+            } else {
+                row.is_gap = false;
+                row.ai_filename = currentSerial;
+
+                if (impLine !== "") {
+                    let parts = impLine.split('.');
+                    if (parts.length === 2) {
+                        row.imp_name = parts[0];
+                        row.imp_sheet = parts[1];
+                    }
+                }
+
+                if (setLine !== "") {
+                    let parts = setLine.split(/\s+/);
+                    parts.forEach(p => {
+                        let s = p.split('.');
+                        if(s.length === 2) {
+                            let setNum = parseInt(s[0]);
+                            let val = parseFloat(s[1]);
+                            if(!isNaN(setNum) && !isNaN(val)) {
+                                row.sets[setNum] = val;
+                                setsColumns.add(setNum);
+                                columnTotals[setNum] = (columnTotals[setNum] || 0) + val;
+                            }
+                        }
+                    });
+                }
+                currentSerial++;
+            }
+            allRows.push(row);
+        }
+
+        return { 
+            rows: allRows, 
+            cols: Array.from(setsColumns).sort((a, b) => a - b), 
+            totals: columnTotals 
+        };
+    }
+
+    function showSummary() {
+        const result = parseData();
+        const section = document.getElementById('summarySection');
+        if (!result) { section.style.display = 'none'; return; }
+
+        const { rows, cols, totals } = result;
+        let headerHtml = `<th>AI Filename</th>`;
+        cols.forEach(c => headerHtml += `<th>Set ${c}</th>`);
+        headerHtml += `<th>Imp. (Name)</th><th>Imp. (Sheet)</th>`;
+        document.getElementById('tableHeader').innerHTML = headerHtml;
+        
+        document.getElementById('tableBody').innerHTML = rows.map(row => `
+            <tr class="${row.is_gap ? 'empty-row' : ''}">
+                <td><b>${row.ai_filename}</b></td>
+                ${cols.map(c => `<td>${row.sets[c] !== undefined ? row.sets[c] : (row.is_gap ? "" : "-")}</td>`).join("")}
+                <td>${row.imp_name || ""}</td>
+                <td>${row.imp_sheet || ""}</td>
+            </tr>
+        `).join("");
+
+        let footerHtml = `<tr class="total-row"><td>TOTAL</td>`;
+        cols.forEach(c => footerHtml += `<td>${totals[c] || 0}</td>`);
+        footerHtml += `<td colspan="2"></td></tr>`;
+        document.getElementById('tableFooter').innerHTML = footerHtml;
+        section.style.display = 'block';
+    }
+
+    function downloadCSV(isClean) {
+        const result = parseData();
+        if (!result) return;
+
+        // Fetch active preset name from drop-down list or user entry field
+        let baseName = presetList.value || presetNameInput.value.trim();
+        let defaultName = "";
+
+        if (!baseName) {
+            defaultName = isClean ? "Clean_Data" : "Full_Data";
+        } else {
+            // Re-established logic to append _Clean or _Full right beside the chosen preset name
+            defaultName = isClean ? baseName + "_Clean" : baseName + "_Full";
+        }
+
+        let fileName = prompt("Enter File Name:", defaultName);
+        if (!fileName) return;
+
+        const { rows, cols, totals } = result;
+        let header = ["AI Filename"];
+        cols.forEach(c => header.push("Set " + c));
+        header.push("Imp. (Name)", "Imp. (Sheet)");
+        
+        let csv = "\uFEFF" + header.join(",") + "\n";
+        
+        if (isClean) {
+            let cleanSetRows = rows.filter(r => Object.keys(r.sets).length > 0);
+            let cleanImpRows = rows.filter(r => r.imp_name !== "" || r.imp_sheet !== "");
+            let totalCleanLines = Math.max(cleanSetRows.length, cleanImpRows.length);
+            
+            for (let i = 0; i < totalCleanLines; i++) {
+                let currentFilename = i + 1;
+                let line = [currentFilename];
+                
+                let setRow = cleanSetRows[i];
+                cols.forEach(c => {
+                    line.push((setRow && setRow.sets[c] !== undefined) ? setRow.sets[c] : "");
+                });
+                
+                let impRow = cleanImpRows[i];
+                line.push(impRow ? (impRow.imp_name || "") : "");
+                line.push(impRow ? (impRow.imp_sheet || "") : "");
+                
+                csv += line.join(",") + "\n";
+            }
+        } else {
+            rows.forEach(row => {
+                let line = [row.ai_filename];
+                cols.forEach(c => line.push(row.sets[c] !== undefined ? row.sets[c] : ""));
+                line.push(row.imp_name || "", row.imp_sheet || "");
+                csv += line.join(",") + "\n";
+            });
+
+            let totalLine = ["TOTAL"];
+            cols.forEach(c => totalLine.push(totals[c] || 0));
+            totalLine.push("", "");
+            csv += totalLine.join(",");
+        }
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName + ".csv";
+        link.click();
+    }
+</script>
+</body>
+</html>
