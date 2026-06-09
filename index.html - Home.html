@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to RIF Automation</title>
+    <!-- Tailwind CSS for Modern Dark UI -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 text-slate-200">
+
+    <div class="w-full max-w-2xl p-8 rounded-2xl bg-[#1e293b] shadow-2xl border border-slate-700/50">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <p class="text-xs font-bold tracking-widest text-emerald-400 uppercase mb-1">Prepress Automation Hub</p>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Welcome to RIF Automation</h1>
+            <p class="text-sm text-slate-400 mt-2">Advanced automation solutions & expert support tools for high-volume garments accessories layout optimization.</p>
+        </div>
+
+        <!-- Tools Grid Section -->
+        <div class="space-y-4">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Prepress Tools</h3>
+            
+            <!-- Tool 1: Ratio Typing -->
+            <div onclick="verifyAccess('ratio-typing.html')" class="group relative flex items-start gap-4 p-5 rounded-xl bg-slate-900/40 border border-slate-700/40 hover:border-emerald-500/50 hover:bg-slate-900/60 transition-all duration-300 cursor-pointer shadow-md">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 rounded-l-xl"></div>
+                <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition-transform">
+                    📊
+                </div>
+                <div>
+                    <h4 class="text-base font-bold text-slate-100 group-hover:text-emerald-400 transition-colors">Ratio Typing & Data Input System</h4>
+                    <p class="text-xs text-slate-400 mt-1">Process layout matrices, balance sheets, and automatically optimize item distribution with precise gap-handling.</p>
+                </div>
+            </div>
+
+            <!-- Tool 2: Plate Ratio Plan -->
+            <div onclick="verifyAccess('plate-ratio.html')" class="group relative flex items-start gap-4 p-5 rounded-xl bg-slate-900/40 border border-slate-700/40 hover:border-sky-500/50 hover:bg-slate-900/60 transition-all duration-300 cursor-pointer shadow-md">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-sky-500 rounded-l-xl"></div>
+                <div class="p-2.5 rounded-lg bg-sky-500/10 text-sky-400 group-hover:scale-110 transition-transform">
+                    🖨️
+                </div>
+                <div>
+                    <h4 class="text-base font-bold text-slate-100 group-hover:text-sky-400 transition-colors">Plate Ratio Plan & Calculator</h4>
+                    <p class="text-xs text-slate-400 mt-1">Calculate printing ratios, layout margins, and plate repeats for gang run production.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demos & Resources -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            <div class="p-5 rounded-xl bg-slate-900/20 border border-slate-700/30">
+                <div class="text-xl mb-2">🎥</div>
+                <h5 class="text-sm font-bold text-slate-200">Watch Video Demo</h5>
+                <p class="text-[11px] text-slate-400 mt-1">See the custom ExtendScript automation in action inside Adobe Illustrator.</p>
+            </div>
+            <div class="p-5 rounded-xl bg-slate-900/20 border border-slate-700/30">
+                <div class="text-xl mb-2">📁</div>
+                <h5 class="text-sm font-bold text-slate-200">Access Project Files</h5>
+                <p class="text-[11px] text-slate-400 mt-1">Download prepress sample files, layouts, and test matrices.</p>
+            </div>
+        </div>
+
+        <!-- Footer Section with System Status -->
+        <div class="mt-8 pt-6 border-t border-slate-700/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-500/20">
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[11px] font-medium text-emerald-400">System Status: ONLINE</span>
+            </div>
+            <p class="text-xs text-slate-500">© 2026 RIF Automation. All rights preserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // আপনার স্ক্রিনশট (image_4fc2bf.png) থেকে লাইভ ডাটাবেজ কনফিগ বসানো হয়েছে
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
+            authDomain: "rislam945-40b9c.firebaseapp.com",
+            databaseURL: "https://rislam945-40b9c-default-rtdb.firebaseio.com",
+            projectId: "rislam945-40b9c",
+            storageBucket: "rislam945-40b9c.appspot.com",
+            messagingSenderId: "35062453898",
+            appId: "1:35062453898:web:df84ea1e705e54dfd53f73"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        function verifyAccess(targetPage) {
+            const userPassword = prompt("Alert: Please enter the Master Password to access this tool:");
+            
+            if (userPassword === null) return; 
+
+            if (userPassword.trim() === "") {
+                alert("Alert: Password cannot be empty!");
+                return;
+            }
+
+            // ফায়ারবেস রিয়েলটাইম ডাটাবেজ থেকে সরাসরি মাস্টার পাসওয়ার্ড চেক করা হচ্ছে
+            database.ref('systemSettings/password').once('value')
+                .then((snapshot) => {
+                    let correctPassword = snapshot.val();
+                    
+                    // ডাটাবেজ একদম নতুন হলে প্রথমবার অটোমেটিক এই ডিফল্ট পাসওয়ার্ডটি সেট হয়ে যাবে
+                    if (!correctPassword) {
+                        correctPassword = "0000@0000";
+                        database.ref('systemSettings/password').set(correctPassword);
+                        database.ref('systemSettings/status').set("ONLINE");
+                    }
+
+                    if (userPassword.trim() === correctPassword) {
+                        alert("Success: Access Granted! Loading page...");
+                        window.location.href = targetPage; 
+                    } else {
+                        alert("Alert: Invalid master password! Access Denied.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Firebase Error:", error);
+                    alert("Alert: Database connection failed. Please check Realtime Database Rules.");
+                });
+        }
+    </script>
+
+</body>
+</html>
