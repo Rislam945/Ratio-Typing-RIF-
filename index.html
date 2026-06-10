@@ -21,9 +21,9 @@
                 <h1 class="text-3xl font-extrabold text-white">Welcome to RIF Automation</h1>
             </div>
 
-            <div id="noticeBlock" class="hidden bg-slate-900/60 border-l-4 border-emerald-500 p-4 rounded-r-xl">
+            <div id="noticeBlock" class="bg-slate-900/60 border-l-4 border-emerald-500 p-4 rounded-r-xl">
                 <h4 class="text-xs font-bold text-emerald-400 uppercase mb-1">📢 Dashboard Notice</h4>
-                <p id="noticeText" class="text-xs text-slate-300 italic"></p>
+                <p id="noticeText" class="text-xs text-slate-300 italic">Loading active updates...</p>
             </div>
 
             <div class="space-y-4">
@@ -69,13 +69,8 @@
         firebase.database().ref('webSetupDynamic').on('value', snap => {
             const data = snap.val();
             if(data) {
-                // Handle Notice Display Block
-                if(data.notice && data.notice.trim() !== "") {
-                    document.getElementById('noticeBlock').classList.remove('hidden');
-                    document.getElementById('noticeText').innerText = data.notice;
-                } else {
-                    document.getElementById('noticeBlock').classList.add('hidden');
-                }
+                // Update Notice Text dynamically without hiding the block
+                document.getElementById('noticeText').innerText = (data.notice && data.notice.trim() !== "") ? data.notice : "No active notices at this moment.";
                 
                 // Handle Contact Info Display
                 document.getElementById('contactDisplay').innerText = data.contact ? "Support: " + data.contact : "";
@@ -84,7 +79,7 @@
                 document.getElementById('ytLink').href = data.youtube || "#";
                 document.getElementById('driveLink').href = data.drive || "#";
                 
-                // Rebuild Dynamic Light Grey Buttons List
+                // Rebuild Dynamic Tools List
                 const list = document.getElementById('dynamicToolsList');
                 list.innerHTML = "";
                 
