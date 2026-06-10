@@ -1,41 +1,41 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RIF অটোমেশন - অ্যাডমিন</title>
+    <title>RIF Automation - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
-    <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">⚙️ ডাইনামিক কন্ট্রোল প্যানেল</h1>
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Control Panel</h1>
         
         <div class="space-y-4">
-            <textarea id="noticeInput" placeholder="নোটিশ বোর্ড..." class="w-full border p-3 rounded-lg"></textarea>
-            <input type="text" id="contactInput" placeholder="যোগাযোগের তথ্য" class="w-full border p-3 rounded-lg">
-            <input type="text" id="ytInput" placeholder="ইউটিউব ভিডিও লিংক" class="w-full border p-3 rounded-lg">
-            <input type="text" id="driveInput" placeholder="গুগল ড্রাইভ লিংক" class="w-full border p-3 rounded-lg">
+            <textarea id="noticeInput" placeholder="Notice Board..." class="w-full border p-3 rounded-lg"></textarea>
+            <input type="text" id="contactInput" placeholder="Contact Info" class="w-full border p-3 rounded-lg">
+            <input type="text" id="ytInput" placeholder="YouTube Link" class="w-full border p-3 rounded-lg">
+            <input type="text" id="driveInput" placeholder="Google Drive Link" class="w-full border p-3 rounded-lg">
         </div>
 
-        <h2 class="mt-8 font-bold text-gray-700">🛠️ বাটন ম্যানেজমেন্ট</h2>
+        <h2 class="mt-8 font-bold text-gray-700">Tool Buttons Management</h2>
         <div id="toolsContainer" class="space-y-4 mt-4"></div>
         
-        <button onclick="addNewToolRow()" class="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg">➕ নতুন বাটন যোগ করুন</button>
-        <button onclick="saveAllSettings()" class="mt-4 w-full py-4 bg-blue-600 text-white font-bold rounded-xl">💾 সেটিংস সেভ করুন</button>
+        <button onclick="addNewToolRow()" class="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg">Add New Button</button>
+        <button onclick="saveAllSettings()" class="mt-4 w-full py-4 bg-blue-600 text-white font-bold rounded-xl">Save Settings</button>
     </div>
     
     <script>
-        const firebaseConfig = { /* আপনার কনফিগ এখানে বসান */ };
+        const firebaseConfig = { /* PASTE YOUR CONFIG HERE */ };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
         function addNewToolRow(title = "", url = "") {
             document.getElementById('toolsContainer').insertAdjacentHTML('beforeend', `
                 <div class="tool-row bg-gray-50 p-4 rounded-xl border flex gap-2">
-                    <input type="text" value="${title}" class="tool-title p-2 border rounded w-1/2" placeholder="বাটনের নাম">
-                    <input type="text" value="${url}" class="tool-url p-2 border rounded w-1/2" placeholder="লিংক">
-                    <button onclick="this.parentElement.remove()" class="text-red-500">❌</button>
+                    <input type="text" value="${title}" class="tool-title p-2 border rounded w-1/2" placeholder="Button Name">
+                    <input type="text" value="${url}" class="tool-url p-2 border rounded w-1/2" placeholder="URL">
+                    <button onclick="this.parentElement.remove()" class="text-red-500">Delete</button>
                 </div>
             `);
         }
@@ -62,7 +62,7 @@
                 youtube: document.getElementById('ytInput').value,
                 drive: document.getElementById('driveInput').value,
                 tools: tools
-            }).then(() => alert("সেভ সম্পন্ন!"));
+            }).then(() => alert("Saved Successfully!"));
         }
     </script>
 </body>
