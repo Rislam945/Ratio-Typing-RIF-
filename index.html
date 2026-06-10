@@ -1,33 +1,37 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RIF অটোমেশন হাব</title>
+    <title>RIF Automation</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-slate-950 text-slate-100 min-h-screen">
     <main class="max-w-5xl mx-auto p-8 grid lg:grid-cols-3 gap-8">
-        <!-- বামপাশ: বাটন প্যানেল -->
         <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-bold text-gray-600">আপনার টুলস ও লিংকসমূহ</h2>
-            <div id="dynamicToolsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <h2 class="text-xs font-bold text-slate-500 uppercase">Active Prepress Tools</h2>
+            <div id="dynamicToolsList" class="space-y-4"></div>
         </div>
-        
-        <!-- ডানপাশ: নোটিশ ও সাপোর্ট -->
-        <div class="lg:col-span-1">
-            <div class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
-                <h2 class="font-bold text-blue-600 mb-4">📢 নোটিশ বোর্ড</h2>
-                <p id="noticeText" class="text-sm italic text-gray-600 border-l-4 border-blue-500 pl-3">লোডিং...</p>
-                <h2 class="font-bold text-gray-700 mt-8 mb-2">📞 যোগাযোগ</h2>
-                <p id="contactText" class="text-sm text-gray-500">লোডিং...</p>
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                <h2 class="text-xs font-bold text-emerald-400 uppercase mb-4">📢 Notice Board</h2>
+                <p id="noticeText" class="text-sm italic border-l-2 border-emerald-500 pl-3">Loading...</p>
+                <h2 class="text-xs font-bold text-sky-400 uppercase mt-6 mb-2">📞 Contact Support</h2>
+                <p id="contactText" class="text-xs text-slate-400">Loading...</p>
             </div>
         </div>
     </main>
-
     <script>
-        const firebaseConfig = { /* আপনার কনফিগ এখানে বসান */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
+            authDomain: "rislam945-40b9c.firebaseapp.com",
+            databaseURL: "https://rislam945-40b9c-default-rtdb.firebaseio.com",
+            projectId: "rislam945-40b9c",
+            storageBucket: "rislam945-40b9c.appspot.com",
+            messagingSenderId: "35062453898",
+            appId: "1:35062453898:web:df84ea1e705e54dfd53f73"
+        };
         firebase.initializeApp(firebaseConfig);
         firebase.database().ref('webSetupDynamic').on('value', snap => {
             const data = snap.val();
@@ -37,8 +41,8 @@
                 const list = document.getElementById('dynamicToolsList');
                 list.innerHTML = "";
                 data.tools?.forEach(t => {
-                    list.insertAdjacentHTML('beforeend', `<a href="${t.url}" class="block bg-white border border-gray-200 p-5 rounded-xl hover:shadow-md hover:border-blue-400 transition font-bold text-center">
-                        ${t.title}</a>`);
+                    list.insertAdjacentHTML('beforeend', `<a href="${t.url}" class="block bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-emerald-500">
+                        <h3 class="font-bold">${t.title}</h3><p class="text-sm text-slate-400">${t.desc}</p></a>`);
                 });
             }
         });
