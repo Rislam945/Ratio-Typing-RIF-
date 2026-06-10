@@ -7,48 +7,113 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800">
-    <main class="max-w-5xl mx-auto p-8 grid lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2">
-            <h2 class="text-lg font-bold text-gray-600 mb-4">Tools & Links</h2>
-            <div id="dynamicToolsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
-        
-        <div class="lg:col-span-1">
-            <div class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
-                <h2 class="font-bold text-gray-800 mb-4">Notice Board</h2>
-                <p id="noticeText" class="text-sm italic text-gray-600 border-l-4 border-gray-400 pl-3">Loading...</p>
-                
-                <div class="mt-6 space-y-2">
-                    <a id="ytLink" href="#" class="block text-sm font-bold text-gray-600 hover:text-blue-600">▶ YouTube Demo</a>
-                    <a id="driveLink" href="#" class="block text-sm font-bold text-gray-600 hover:text-blue-600">📁 Google Drive File</a>
-                </div>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen font-sans flex flex-col justify-between">
+    
+    <header class="p-4 max-w-5xl w-full mx-auto flex justify-end">
+        <button onclick="triggerAdmin()" class="text-xs text-slate-400 hover:text-slate-200 border border-slate-800 bg-slate-900/50 px-3 py-1.5 rounded-lg transition cursor-pointer">⚙️ Admin Login</button>
+    </header>
 
-                <h2 class="font-bold text-gray-800 mt-8 mb-2">Contact</h2>
-                <p id="contactText" class="text-sm text-gray-500">Loading...</p>
+    <main class="max-w-2xl mx-auto p-4 w-full flex-grow flex items-center justify-center">
+        <div class="bg-[#131c2e] border border-slate-800/80 w-full p-8 rounded-2xl shadow-2xl space-y-6">
+            
+            <div class="text-center space-y-1">
+                <span class="text-xs font-bold text-emerald-400 tracking-wider uppercase">Prepress Automation Hub</span>
+                <h1 class="text-3xl font-extrabold text-white">Welcome to RIF Automation</h1>
             </div>
+
+            <div id="noticeBlock" class="hidden bg-slate-900/60 border-l-4 border-emerald-500 p-4 rounded-r-xl">
+                <h4 class="text-xs font-bold text-emerald-400 uppercase mb-1">📢 Dashboard Notice</h4>
+                <p id="noticeText" class="text-xs text-slate-300 italic"></p>
+            </div>
+
+            <div class="space-y-4">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Prepress Tools</h2>
+                <div id="dynamicToolsList" class="space-y-3">
+                    <p class="text-xs text-slate-500 italic">Fetching production nodes...</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800/60">
+                <a id="ytLink" href="#" target="_blank" class="block bg-slate-900/40 border border-slate-800 p-4 rounded-xl hover:border-red-500 transition group">
+                    <span class="text-lg">🎬</span>
+                    <h4 class="text-xs font-bold text-slate-300 mt-1 group-hover:text-red-400">Watch Video Demo</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5">Click to view custom workflows on YouTube.</p>
+                </a>
+                <a id="driveLink" href="#" target="_blank" class="block bg-slate-900/40 border border-slate-800 p-4 rounded-xl hover:border-amber-500 transition group">
+                    <span class="text-lg">📁</span>
+                    <h4 class="text-xs font-bold text-slate-300 mt-1 group-hover:text-amber-400">Access Project Files</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5">Download templates and metrics data.</p>
+                </a>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 gap-2 border-t border-slate-800/40">
+                <p>© 2026 RIF Automation. All rights preserved.</p>
+                <p id="contactDisplay" class="italic text-slate-400"></p>
+            </div>
+
         </div>
     </main>
 
     <script>
-        const firebaseConfig = { /* PASTE YOUR CONFIG HERE */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
+            authDomain: "rislam945-40b9c.firebaseapp.com",
+            databaseURL: "https://rislam945-40b9c-default-rtdb.firebaseio.com",
+            projectId: "rislam945-40b9c",
+            storageBucket: "rislam945-40b9c.appspot.com",
+            messagingSenderId: "35062453898",
+            appId: "1:35062453898:web:df84ea1e705e54dfd53f73"
+        };
         firebase.initializeApp(firebaseConfig);
         
         firebase.database().ref('webSetupDynamic').on('value', snap => {
             const data = snap.val();
             if(data) {
-                document.getElementById('noticeText').innerText = data.notice || "No notice";
-                document.getElementById('contactText').innerText = data.contact || "No info";
+                // Handle Notice Display Block
+                if(data.notice && data.notice.trim() !== "") {
+                    document.getElementById('noticeBlock').classList.remove('hidden');
+                    document.getElementById('noticeText').innerText = data.notice;
+                } else {
+                    document.getElementById('noticeBlock').classList.add('hidden');
+                }
+                
+                // Handle Contact Info Display
+                document.getElementById('contactDisplay').innerText = data.contact ? "Support: " + data.contact : "";
+                
+                // Assign Links to Media Cards
                 document.getElementById('ytLink').href = data.youtube || "#";
                 document.getElementById('driveLink').href = data.drive || "#";
                 
+                // Rebuild Dynamic Light Grey Buttons List
                 const list = document.getElementById('dynamicToolsList');
                 list.innerHTML = "";
-                data.tools?.forEach(t => {
-                    list.insertAdjacentHTML('beforeend', `<a href="${t.url}" class="block bg-gray-200 border border-gray-300 p-5 rounded-xl hover:bg-gray-300 transition font-bold text-center text-gray-700">${t.title}</a>`);
-                });
+                
+                if(data.tools && data.tools.length > 0) {
+                    data.tools.forEach(t => {
+                        list.insertAdjacentHTML('beforeend', `
+                            <a href="${t.url}" class="flex items-center gap-4 bg-slate-800/60 border border-slate-700/40 p-4 rounded-xl hover:bg-slate-700/50 hover:border-slate-500 transition group shadow-sm">
+                                <div class="bg-slate-700/60 p-2.5 rounded-lg text-slate-300 font-bold text-xs group-hover:bg-slate-600 transition">⚡</div>
+                                <div class="text-left">
+                                    <h3 class="text-sm font-bold text-slate-200 group-hover:text-white transition">${t.title}</h3>
+                                    <p class="text-xs text-slate-400 mt-0.5 line-clamp-1">${t.desc}</p>
+                                </div>
+                            </a>
+                        `);
+                    });
+                } else {
+                    list.innerHTML = `<p class="text-slate-500 italic text-xs">No active automation scripts found.</p>`;
+                }
             }
         });
+
+        function triggerAdmin() {
+            const pass = prompt("Enter Administration Password:");
+            if (pass === "0000@0000") {
+                window.location.href = "admin-panel.html";
+            } else if (pass !== null) {
+                alert("Unauthorized Access Attempt.");
+            }
+        }
     </script>
 </body>
 </html>
