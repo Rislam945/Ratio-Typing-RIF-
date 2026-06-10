@@ -2,40 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RIF Automation - Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIF Automation - Control Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Control Panel</h1>
-        
-        <div class="space-y-4">
-            <textarea id="noticeInput" placeholder="Notice Board..." class="w-full border p-3 rounded-lg"></textarea>
-            <input type="text" id="contactInput" placeholder="Contact Info" class="w-full border p-3 rounded-lg">
-            <input type="text" id="ytInput" placeholder="YouTube Link" class="w-full border p-3 rounded-lg">
-            <input type="text" id="driveInput" placeholder="Google Drive Link" class="w-full border p-3 rounded-lg">
+<body class="bg-[#0f172a] text-slate-100 min-h-screen p-6">
+    <div class="max-w-4xl mx-auto bg-[#1e293b] p-8 rounded-2xl shadow-2xl border border-slate-700/50">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-emerald-400 flex items-center gap-2">⚙️ Dynamic Setup Panel</h1>
+            <button onclick="window.location.href='index.html'" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm transition">Exit Panel</button>
         </div>
-
-        <h2 class="mt-8 font-bold text-gray-700">Tool Buttons Management</h2>
-        <div id="toolsContainer" class="space-y-4 mt-4"></div>
         
-        <button onclick="addNewToolRow()" class="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg">Add New Button</button>
-        <button onclick="saveAllSettings()" class="mt-4 w-full py-4 bg-blue-600 text-white font-bold rounded-xl">Save Settings</button>
+        <div class="space-y-6">
+            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/40">
+                <label class="block text-sm font-semibold text-slate-300 mb-2">📢 Notice Board Text</label>
+                <textarea id="noticeInput" rows="3" placeholder="Enter dashboard notice..." class="w-full bg-[#1e293b] border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none text-slate-100"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/50 p-5 rounded-xl border border-slate-700/40">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">🎬 YouTube Video URL</label>
+                    <input type="text" id="ytInput" placeholder="https://youtube.com/..." class="w-full bg-[#1e293b] border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none text-slate-100">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">📁 Google Drive URL</label>
+                    <input type="text" id="driveInput" placeholder="https://drive.google.com/..." class="w-full bg-[#1e293b] border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none text-slate-100">
+                </div>
+            </div>
+
+            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/40">
+                <label class="block text-sm font-semibold text-slate-300 mb-2">📞 Contact Info Support</label>
+                <input type="text" id="contactInput" placeholder="Enter phone, email or support info..." class="w-full bg-[#1e293b] border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none text-slate-100">
+            </div>
+
+            <div class="border-t border-slate-700/50 pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">🛠️ Manage Prepress Tools</h2>
+                    <button onclick="addNewToolRow()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-lg transition">➕ Add New Tool Box</button>
+                </div>
+                <div id="toolsContainer" class="space-y-4"></div>
+            </div>
+
+            <button onclick="saveAllSettings()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl shadow-lg transition mt-6">💾 Save All Configurations Live</button>
+        </div>
     </div>
     
     <script>
-        const firebaseConfig = { /* PASTE YOUR CONFIG HERE */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
+            authDomain: "rislam945-40b9c.firebaseapp.com",
+            databaseURL: "https://rislam945-40b9c-default-rtdb.firebaseio.com",
+            projectId: "rislam945-40b9c",
+            storageBucket: "rislam945-40b9c.appspot.com",
+            messagingSenderId: "35062453898",
+            appId: "1:35062453898:web:df84ea1e705e54dfd53f73"
+        };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        function addNewToolRow(title = "", url = "") {
+        function addNewToolRow(title = "", desc = "", url = "") {
             document.getElementById('toolsContainer').insertAdjacentHTML('beforeend', `
-                <div class="tool-row bg-gray-50 p-4 rounded-xl border flex gap-2">
-                    <input type="text" value="${title}" class="tool-title p-2 border rounded w-1/2" placeholder="Button Name">
-                    <input type="text" value="${url}" class="tool-url p-2 border rounded w-1/2" placeholder="URL">
-                    <button onclick="this.parentElement.remove()" class="text-red-500">Delete</button>
+                <div class="tool-row bg-slate-900/40 p-5 rounded-xl border border-slate-700/50 relative space-y-4">
+                    <button onclick="this.parentElement.remove()" class="absolute top-4 right-4 text-xs bg-red-950 text-red-400 border border-red-900 px-3 py-1 rounded hover:bg-red-900 hover:text-white transition">❌ Remove</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Button / Title Name</label>
+                            <input type="text" value="${title}" class="tool-title w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="e.g., Plate Ratio Plan">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Description Text</label>
+                            <input type="text" value="${desc}" class="tool-desc w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="Describe what this automated script does...">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Target Link / URL or File Name</label>
+                        <input type="text" value="${url}" class="tool-url w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="e.g., ratio-calculator.html">
+                    </div>
                 </div>
             `);
         }
@@ -47,22 +91,24 @@
                 document.getElementById('contactInput').value = data.contact || "";
                 document.getElementById('ytInput').value = data.youtube || "";
                 document.getElementById('driveInput').value = data.drive || "";
-                data.tools?.forEach(t => addNewToolRow(t.title, t.url));
+                data.tools?.forEach(t => addNewToolRow(t.title, t.desc, t.url));
             }
         });
 
         function saveAllSettings() {
             const tools = Array.from(document.querySelectorAll('.tool-row')).map(row => ({
                 title: row.querySelector('.tool-title').value,
+                desc: row.querySelector('.tool-desc').value,
                 url: row.querySelector('.tool-url').value
-            }));
+            })).filter(t => t.title.trim() !== "");
+
             database.ref('webSetupDynamic').set({
                 notice: document.getElementById('noticeInput').value,
                 contact: document.getElementById('contactInput').value,
                 youtube: document.getElementById('ytInput').value,
                 drive: document.getElementById('driveInput').value,
                 tools: tools
-            }).then(() => alert("Saved Successfully!"));
+            }).then(() => alert("All configurations saved successfully!"));
         }
     </script>
 </body>
