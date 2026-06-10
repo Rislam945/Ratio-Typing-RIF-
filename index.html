@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RIF অটোমেশন হাব</title>
+    <title>RIF Automation Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -10,42 +10,42 @@
 <body class="bg-gray-100 text-gray-800">
     <main class="max-w-5xl mx-auto p-8 grid lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2">
-            <h2 class="text-lg font-bold text-gray-600 mb-4">🛠️ টুলস ও লিংকসমূহ</h2>
+            <h2 class="text-lg font-bold text-gray-600 mb-4">Tools & Links</h2>
             <div id="dynamicToolsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
         
         <div class="lg:col-span-1">
             <div class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
-                <h2 class="font-bold text-gray-800 mb-4">📢 নোটিশ বোর্ড</h2>
-                <p id="noticeText" class="text-sm italic text-gray-600 border-l-4 border-gray-400 pl-3">লোড হচ্ছে...</p>
+                <h2 class="font-bold text-gray-800 mb-4">Notice Board</h2>
+                <p id="noticeText" class="text-sm italic text-gray-600 border-l-4 border-gray-400 pl-3">Loading...</p>
                 
                 <div class="mt-6 space-y-2">
-                    <a id="ytLink" href="#" class="block text-sm font-bold text-gray-600 hover:text-blue-600">▶️ ইউটিউব ডেমো</a>
-                    <a id="driveLink" href="#" class="block text-sm font-bold text-gray-600 hover:text-blue-600">📁 গুগল ড্রাইভ ফাইল</a>
+                    <a id="ytLink" href="#" class="block text-sm font-bold text-gray-600 hover:text-blue-600">▶ YouTube Demo</a>
+                    <a id="driveLink" href="#" class="block text-sm font-bold text-gray-600 hover:text-blue-600">📁 Google Drive File</a>
                 </div>
 
-                <h2 class="font-bold text-gray-800 mt-8 mb-2">📞 যোগাযোগ</h2>
-                <p id="contactText" class="text-sm text-gray-500">লোড হচ্ছে...</p>
+                <h2 class="font-bold text-gray-800 mt-8 mb-2">Contact</h2>
+                <p id="contactText" class="text-sm text-gray-500">Loading...</p>
             </div>
         </div>
     </main>
 
     <script>
-        const firebaseConfig = { /* আপনার কনফিগ */ };
+        const firebaseConfig = { /* PASTE YOUR CONFIG HERE */ };
         firebase.initializeApp(firebaseConfig);
+        
         firebase.database().ref('webSetupDynamic').on('value', snap => {
             const data = snap.val();
             if(data) {
-                document.getElementById('noticeText').innerText = data.notice;
-                document.getElementById('contactText').innerText = data.contact;
-                document.getElementById('ytLink').href = data.youtube;
-                document.getElementById('driveLink').href = data.drive;
+                document.getElementById('noticeText').innerText = data.notice || "No notice";
+                document.getElementById('contactText').innerText = data.contact || "No info";
+                document.getElementById('ytLink').href = data.youtube || "#";
+                document.getElementById('driveLink').href = data.drive || "#";
                 
                 const list = document.getElementById('dynamicToolsList');
                 list.innerHTML = "";
                 data.tools?.forEach(t => {
-                    list.insertAdjacentHTML('beforeend', `<a href="${t.url}" class="block bg-gray-200 border border-gray-300 p-5 rounded-xl hover:bg-gray-300 transition font-bold text-center text-gray-700">
-                        ${t.title}</a>`);
+                    list.insertAdjacentHTML('beforeend', `<a href="${t.url}" class="block bg-gray-200 border border-gray-300 p-5 rounded-xl hover:bg-gray-300 transition font-bold text-center text-gray-700">${t.title}</a>`);
                 });
             }
         });
