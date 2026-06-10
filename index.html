@@ -12,35 +12,41 @@
         <button onclick="triggerAdmin()" class="text-xs text-slate-500 hover:text-slate-300 border border-slate-800 px-3 py-1.5 rounded-lg transition cursor-pointer">⚙️ অ্যাডমিন লগইন</button>
     </header>
     <main class="max-w-5xl mx-auto p-8 grid lg:grid-cols-3 gap-8">
+        <!-- বাম পাশে টুলস -->
         <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-xs font-bold text-slate-500 uppercase">Tools</h2>
+            <h2 class="text-xs font-bold text-slate-500 uppercase">প্রিপ্রেস টুলস</h2>
             <div id="dynamicToolsList" class="space-y-4"></div>
         </div>
+        
+        <!-- ডান পাশে সাইডবার (নোটিশ + লিংক) -->
         <div class="lg:col-span-1 space-y-6">
             <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                <h2 class="text-xs font-bold text-emerald-400 uppercase mb-4">📢 Notice board</h2>
+                <h2 class="text-xs font-bold text-emerald-400 uppercase mb-4">📢 নোটিশ বোর্ড</h2>
                 <p id="noticeText" class="text-sm italic border-l-2 border-emerald-500 pl-3">লোডিং...</p>
-                <h2 class="text-xs font-bold text-sky-400 uppercase mt-6 mb-2">📞 Contact us</h2>
+                
+                <!-- ইউটিউব ও ড্রাইভ লিংক এখানে আসবে -->
+                <div class="mt-6 pt-6 border-t border-slate-800 space-y-3">
+                    <a id="ytLink" href="#" target="_blank" class="block text-xs text-slate-400 hover:text-emerald-400 transition">🎬 ইউটিউব ভিডিও ডেমো</a>
+                    <a id="driveLink" href="#" target="_blank" class="block text-xs text-slate-400 hover:text-emerald-400 transition">📁 গুগল ড্রাইভ ফাইল</a>
+                </div>
+
+                <h2 class="text-xs font-bold text-sky-400 uppercase mt-6 mb-2">📞 যোগাযোগ</h2>
                 <p id="contactText" class="text-xs text-slate-400">লোডিং...</p>
             </div>
         </div>
     </main>
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBZQL96ixyp9L5wLJeIw1Mk45VHuj0HGNs",
-            authDomain: "rislam945-40b9c.firebaseapp.com",
-            databaseURL: "https://rislam945-40b9c-default-rtdb.firebaseio.com",
-            projectId: "rislam945-40b9c",
-            storageBucket: "rislam945-40b9c.appspot.com",
-            messagingSenderId: "35062453898",
-            appId: "1:35062453898:web:df84ea1e705e54dfd53f73"
-        };
+        const firebaseConfig = { /* আপনার কনফিগ এখানে বসাবেন */ };
         firebase.initializeApp(firebaseConfig);
         firebase.database().ref('webSetupDynamic').on('value', snap => {
             const data = snap.val();
             if(data) {
-                document.getElementById('noticeText').innerText = data.notice;
-                document.getElementById('contactText').innerText = data.contact;
+                document.getElementById('noticeText').innerText = data.notice || "কোন নোটিশ নেই।";
+                document.getElementById('contactText').innerText = data.contact || "তথ্য নেই।";
+                // এখানে লিংক আপডেট করা হলো
+                document.getElementById('ytLink').href = data.youtubeUrl || "#";
+                document.getElementById('driveLink').href = data.driveUrl || "#";
+                
                 const list = document.getElementById('dynamicToolsList');
                 list.innerHTML = "";
                 data.tools?.forEach(t => {
