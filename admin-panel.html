@@ -17,7 +17,7 @@
         
         <div class="space-y-6">
             <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/40">
-                <label class="block text-sm font-semibold text-slate-300 mb-2">📢 Notice Board Text</label>
+                <label class="block text-sm font-semibold text-slate-300 mb-2">📢 Notice Board Text (Will Show on Right Column)</label>
                 <textarea id="noticeInput" rows="3" placeholder="Enter dashboard notice..." class="w-full bg-[#1e293b] border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none text-slate-100"></textarea>
             </div>
 
@@ -34,13 +34,13 @@
 
             <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/40">
                 <label class="block text-sm font-semibold text-slate-300 mb-2">📞 Contact Info Support</label>
-                <input type="text" id="contactInput" placeholder="Enter phone, email or support info..." class="w-full bg-[#1e293b] border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none text-slate-100">
+                <input type="text" id="contactInput" placeholder="Enter phone or support info..." class="w-full bg-[#1e293b] border border-slate-700 rounded-lg p-3 text-sm focus:border-emerald-500 outline-none text-slate-100">
             </div>
 
             <div class="border-t border-slate-700/50 pt-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">🛠️ Manage Prepress Tools</h2>
-                    <button onclick="addNewToolRow()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-lg transition">➕ Add New Tool Box</button>
+                    <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">🛠️ Manage Left Side Buttons & Links</h2>
+                    <button onclick="addNewToolRow()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-lg transition">➕ Add New Link Card</button>
                 </div>
                 <div id="toolsContainer" class="space-y-4"></div>
             </div>
@@ -68,17 +68,17 @@
                     <button onclick="this.parentElement.remove()" class="absolute top-4 right-4 text-xs bg-red-950 text-red-400 border border-red-900 px-3 py-1 rounded hover:bg-red-900 hover:text-white transition">❌ Remove</button>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Button / Title Name</label>
-                            <input type="text" value="${title}" class="tool-title w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="e.g., Plate Ratio Plan">
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Link/Button Name</label>
+                            <input type="text" value="${title}" class="tool-title w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="e.g., Target Dashboard Website">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Description Text</label>
-                            <input type="text" value="${desc}" class="tool-desc w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="Describe what this automated script does...">
+                            <input type="text" value="${desc}" class="tool-desc w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="Short description of this website/tool link...">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Target Link / URL or File Name</label>
-                        <input type="text" value="${url}" class="tool-url w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="e.g., ratio-calculator.html">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Target URL (e.g., https://example.com or local-file.html)</label>
+                        <input type="text" value="${url}" class="tool-url w-full bg-[#1e293b] border border-slate-700 rounded-lg p-2.5 text-sm text-slate-100" placeholder="Paste full link here...">
                     </div>
                 </div>
             `);
