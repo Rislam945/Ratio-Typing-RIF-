@@ -31,15 +31,15 @@
                 <div class="space-y-4">
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2">🛠️ Prepress Tools</h2>
                     <div id="toolsListContainer" class="space-y-3">
-                        <p class="text-xs text-slate-500 italic">Loading production tools...</p>
+                        <p class="text-xs text-slate-500 italic">Loading tools...</p>
                     </div>
                 </div>
                 
-                <!-- 2. MIDDLE COLUMN: External Web Links (Right of Tools) -->
+                <!-- 2. MIDDLE COLUMN: Separate Useful Web Links -->
                 <div class="space-y-4 border-t md:border-t-0 md:border-l md:border-r border-slate-800/60 pt-4 md:pt-0 md:px-6">
                     <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2">🔗 Useful Web Links</h2>
                     <div id="webLinksContainer" class="space-y-3">
-                        <p class="text-xs text-slate-500 italic">Loading web references...</p>
+                        <p class="text-xs text-slate-500 italic">Loading web links...</p>
                     </div>
                 </div>
                 
@@ -94,49 +94,48 @@
         firebase.database().ref('webSetupDynamic').on('value', snap => {
             const data = snap.val();
             if(data) {
-                // Update Notice Text
                 document.getElementById('noticeText').innerText = (data.notice && data.notice.trim() !== "") ? data.notice : "No active notices at this moment.";
-                
-                // Handle Contact Info Display
                 document.getElementById('contactDisplay').innerText = data.contact ? "Support: " + data.contact : "";
-                
-                // Assign Links to Media Cards
                 document.getElementById('ytLink').href = data.youtube || "#";
                 document.getElementById('driveLink').href = data.drive || "#";
                 
-                // Separate Containers
                 const toolsContainer = document.getElementById('toolsListContainer');
                 const linksContainer = document.getElementById('webLinksContainer');
                 
                 toolsContainer.innerHTML = "";
                 linksContainer.innerHTML = "";
                 
+                // Render Section 1: Prepress Tools
                 if(data.tools && data.tools.length > 0) {
                     data.tools.forEach(t => {
-                        const cardHTML = `
+                        toolsContainer.insertAdjacentHTML('beforeend', `
                             <a href="${t.url}" class="flex items-center gap-3 bg-slate-800/60 border border-slate-700/40 p-3.5 rounded-xl hover:bg-slate-700/50 hover:border-slate-500 transition group shadow-sm">
-                                <div class="bg-slate-700/60 p-2 rounded-lg text-slate-300 font-bold text-xs group-hover:bg-slate-600 transition">⚡</div>
+                                <div class="bg-slate-700/60 p-2 rounded-lg text-slate-300 font-bold text-xs group-hover:bg-slate-600 transition">⚙️</div>
                                 <div class="text-left">
                                     <h3 class="text-xs font-bold text-slate-200 group-hover:text-white transition">${t.title}</h3>
                                     <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">${t.desc}</p>
                                 </div>
                             </a>
-                        `;
-                        
-                        // Logic to split between Core Local Tools and External Web Links
-                        if(t.url.startsWith('http://') || t.url.startsWith('https://') || t.url.includes('www.')) {
-                            linksContainer.insertAdjacentHTML('beforeend', cardHTML);
-                        } else {
-                            toolsContainer.insertAdjacentHTML('beforeend', cardHTML);
-                        }
+                        `);
                     });
-                }
-                
-                // Fallbacks if lists remain empty
-                if(toolsContainer.innerHTML === "") {
+                } else {
                     toolsContainer.innerHTML = `<p class="text-slate-500 italic text-xs">No tool scripts configured.</p>`;
                 }
-                if(linksContainer.innerHTML === "") {
+                
+                // Render Section 2: Useful Web Links
+                if(data.webLinks && data.webLinks.length > 0) {
+                    data.webLinks.forEach(wl => {
+                        linksContainer.insertAdjacentHTML('beforeend', `
+                            <a href="${wl.url}" target="_blank" class="flex items-center gap-3 bg-slate-800/40 border border-slate-700/30 p-3.5 rounded-xl hover:bg-slate-700/40 hover:border-blue-500 transition group shadow-sm">
+                                <div class="bg-slate-800/80 p-2 rounded-lg text-blue-400 font-bold text-xs group-hover:bg-slate-700 transition">🔗</div>
+                                <div class="text-left">
+                                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-blue-400 transition">${wl.title}</h3>
+                                    <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">${wl.desc}</p>
+                                </div>
+                            </a>
+                        `);
+                    });
+                } else {
                     linksContainer.innerHTML = `<p class="text-slate-500 italic text-xs">No web links configured.</p>`;
                 }
             }
